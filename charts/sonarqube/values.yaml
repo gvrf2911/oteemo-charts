@@ -237,3 +237,7 @@ podLabels: {}
 # For compatibility with 8.0 replace by "/opt/sq"
 # For compatibility with 8.2, leave the default. They changed it back to /opt/sonarqube
 sonarqubeFolder: /opt/sonarqube
+prometheus:
+  # bla bla bla
+  jmx:
+    enabled: false
