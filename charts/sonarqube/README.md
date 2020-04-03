@@ -72,6 +72,9 @@ The following table lists the configurable parameters of the Sonarqube chart and
 | `persistence.size`                    | Size of the volume                                                           | 10Gi                                           |
 | `persistence.volumes`                 | Specify extra volumes. Refer to ".spec.volumes" specification                | []                                             |
 | `persistence.mounts`                  | Specify extra mounts. Refer to ".spec.containers.volumeMounts" specification | []                                             |
+| `serviceAccount.create`               | If set to true, create a serviceAccount                                      | false                                          |
+| `serviceAccount.name`                 | Name of the serviceAccount to create/use                                     | `sonarqube-sonarqube`                          |
+| `serviceAccount.annotations`          | Additional serviceAccount annotations                                        | `{}`                                           |
 | `sonarProperties`                     | Custom `sonar.properties` file                                               | None                                           |
 | `sonarSecretProperties`               | Additional `sonar.properties` file to load from a secret                     | None                                           |
 | `caCerts.secret`                      | Name of the secret containing additional CA certificates                     | `nil`                                          |
@@ -79,22 +82,13 @@ The following table lists the configurable parameters of the Sonarqube chart and
 | `env`                                 | Environment variables to attach to the pods                                  | `nil`                                          |
 | `sonarSecretKey`                      | Name of existing secret used for settings encryption                         | None                                           |
 | `sonarProperties`                     | Custom `sonar.properties` file                                               | `{}`                                           |
-| `database.type`                       | Set to "mysql" to use mysql database                                         | `postgresql`                                   |
-| `postgresql.enabled`                  | Set to `false` to use external server / mysql database                       | `true`                                         |
+| `postgresql.enabled`                  | Set to `false` to use external server                                        | `true`                                         |
 | `postgresql.existingSecret`           | Secret containing the password of the external Postgresql server             | `null`                                         |
 | `postgresql.postgresqlServer`         | Hostname of the external Postgresql server                                   | `null`                                         |
 | `postgresql.postgresqlUsername`       | Postgresql database user                                                     | `sonarUser`                                    |
 | `postgresql.postgresqlPassword`       | Postgresql database password                                                 | `sonarPass`                                    |
 | `postgresql.postgresqlDatabase`       | Postgresql database name                                                     | `sonarDB`                                      |
 | `postgresql.service.port`             | Postgresql port                                                              | `5432`                                         |
-| `mysql.enabled`                       | Set to `false` to use external server / postgresql database                  | `false`                                        |
-| `mysql.existingSecret`                | Secret containing the password of the external Mysql server                  | `null`                                         |
-| `mysql.mysqlServer`                   | Hostname of the external Mysql server                                        | `null`                                         |
-| `mysql.mysqlUser`                     | Mysql database user                                                          | `sonarUser`                                    |
-| `mysql.mysqlPassword`                 | Mysql database password                                                      | `sonarPass`                                    |
-| `mysql.mysqlDatabase`                 | Mysql database name                                                          | `sonarDB`                                      |
-| `mysql.mysqlParams`                   | Mysql parameters for JDBC connection string                                  | `{}`                                           |
-| `mysql.service.port`                  | Mysql port                                                                   | `3306`                                         |
 | `annotations`                         | Sonarqube Pod annotations                                                    | `{}`                                           |
 | `resources`                           | Sonarqube Pod resource requests & limits                                     | `{}`                                           |
 | `affinity`                            | Node / Pod affinities                                                        | `{}`                                           |
@@ -109,11 +103,14 @@ The following table lists the configurable parameters of the Sonarqube chart and
 | `plugins.initVolumesContainerImage`   | Change init volumes container image                                          | `busybox:1.31`                                 |
 | `plugins.initCertsContainerImage`     | Change init ca certs container image                                         | `adoptopenjdk/openjdk11:alpine`                |
 | `plugins.initTestContainerImage`      | Change init test container image                                             | `dduportal/bats:0.4.0`                         |
-| `plugins.deleteDefaultPlugins`        | Remove default plugins and use plugins.install list                          | `[]`                                           |
+| `plugins.deleteDefaultPlugins`        | Remove default plugins and use plugins.install list                          | false                                           |
+| `plugins.httpProxy`                   | For use behind a corporate proxy when downloading plugins                    | ""                                             |
+| `plugins.httpsProxy`                  | For use behind a corporate proxy when downloading plugins                    | ""                                             |
 | `podLabels`                           | Map of labels to add to the pods                                             | `{}`                                           |
 | `sonarqubeFolder`                     | Directory name of Sonarqube                                                  | `/opt/sonarqube`                               |
+| `enableTests`                         | Flag that allows tests to be excluded from generated yaml                    | true                                           |
 
-You can also configure values for the PostgreSQL / MySQL database via the Postgresql [README.md](https://github.com/kubernetes/charts/blob/master/stable/postgresql/README.md) / MySQL [README.md](https://github.com/kubernetes/charts/blob/master/stable/mysql/README.md)
+You can also configure values for the PostgreSQL database via the Postgresql [README.md](https://github.com/kubernetes/charts/blob/master/stable/postgresql/README.md)
 
 For overriding variables see: [Customizing the chart](https://docs.helm.sh/using_helm/#customizing-the-chart-before-installing)
 
@@ -157,3 +154,5 @@ To enable auto-configuration of the kube worker node, set `elasticsearch.configu
 This will run `sysctl -w vm.max_map_count=262144` on the worker where the sonarqube pod(s) get scheduled. This needs to be set to `262144` but normally defaults to `65530`. Other kernel settings are recommended by the [docker image](https://hub.docker.com/_/sonarqube/#requirements), but the defaults work fine in most cases.
 
 To disable worker node configuration, set `elasticsearch.configureNode` to `false`.  Note that if node configuration is not enabled, then you will likely need to also disable the Elasticsearch bootstrap checks.  These can be explicitly disabled by setting `elasticsearch.bootstrapChecks` to `false`.
+
+### As of 7.9 Mysql is no longer supported, so it has been removed from the chart

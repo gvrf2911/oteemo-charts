@@ -32,6 +32,13 @@ spec:
       {{- end }}
 {{- end }}
     spec:
+    {{- if .Values.serviceAccount.create }}
+    {{- if .Values.serviceAccount.name }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}
+    {{- else }}
+      serviceAccountName: {{ include "sonarqube.fullname" . }}
+    {{- end }}
+    {{- end }}
       securityContext:
 {{ toYaml .Values.securityContext | indent 8 }}
       {{- if .Values.image.pullSecret }}
@@ -91,9 +98,9 @@ spec:
           securityContext:
             privileged: true
           command:
-          - sysctl
-          - -w
-          - vm.max_map_count=262144
+          - /bin/sh
+          - -c
+          - 'if [[ "$(sysctl -n vm.max_map_count)" -lt 262144 ]]; then sysctl -w vm.max_map_count=262144; fi'
           {{- with .Values.env }}
           env:
             {{- . | toYaml | trim | nindent 12 }}
@@ -101,7 +108,7 @@ spec:
       {{- end }}
       {{- if .Values.plugins.install }}
         - name: install-plugins
-          image: {{ default "alpine:3.10.3" .Values.plugins.initContainerImage }}
+          image: {{ default "rjkernick/alpine-wget:latest" .Values.plugins.initContainerImage }}
           command: ["sh",
             "-c",
             "mkdir -p {{ .Values.sonarqubeFolder }}/extensions/plugins/tmp &&
@@ -178,6 +185,9 @@ spec:
             {{- . | toYaml | trim | nindent 12 }}
           {{- end }}
       {{- end }}
+      {{- if .Values.priorityClassName }}
+      priorityClassName: {{ .Values.priorityClassName }}
+      {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -201,27 +211,14 @@ spec:
               value: "{{ .Values.jvmOpts }}"
               {{- end }}
             - name: SONARQUBE_JDBC_USERNAME
-              {{- if eq .Values.database.type "postgresql" }}
               value: {{ .Values.postgresql.postgresqlUsername | quote }}
-              {{- else if eq .Values.database.type "mysql" }}
-              value: {{ .Values.mysql.mysqlUser | quote }}
-              {{- end }}
             - name: SONARQUBE_JDBC_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  {{- if eq .Values.database.type "postgresql" }}
                   name: {{- if .Values.postgresql.enabled }} {{ template "postgresql.fullname" .}} {{- else if .Values.postgresql.existingSecret }} {{ .Values.postgresql.existingSecret }} {{- else }} {{ template "sonarqube.fullname" . }} {{- end }}
                   key: postgresql-password
-                  {{- else if eq .Values.database.type "mysql" }}
-                  name: {{- if .Values.mysql.enabled }} {{ template "mysql.fullname" .}} {{- else if .Values.mysql.existingSecret }} {{ .Values.mysql.existingSecret }} {{- else }} {{ template "sonarqube.fullname" . }} {{- end }}
-                  key: mysql-password
-                  {{- end }}
             - name: SONARQUBE_JDBC_URL
-              {{- if eq .Values.database.type "postgresql" }}
               value: "jdbc:postgresql://{{ template "postgresql.hostname" . }}:{{- .Values.postgresql.service.port -}}/{{- .Values.postgresql.postgresqlDatabase -}}"
-              {{- else if eq .Values.database.type "mysql" }}
-              value: "jdbc:mysql://{{ template "mysql.hostname" . }}:{{ .Values.mysql.service.port }}/{{ .Values.mysql.mysqlDatabase }}?useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true{{- range $key, $value := .Values.mysql.mysqlParams }}&{{ $key }}={{ $value }}{{- end }}"
-              {{- end }}
           livenessProbe:
             httpGet:
               path: {{ .Values.livenessProbe.sonarWebContext }}sessions/new

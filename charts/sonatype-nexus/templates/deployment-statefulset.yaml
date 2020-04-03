@@ -64,6 +64,9 @@ spec:
       {{- else }}
       serviceAccountName: {{ .Values.serviceAccount.name | quote }}
       {{- end }}
+      {{- if .Values.nexus.priorityClassName }}
+      priorityClassName: {{ .Values.nexus.priorityClassName }}
+      {{- end }}
       containers:
         - name: nexus
           image: {{ .Values.nexus.imageName }}:{{ .Values.nexus.imageTag }}
@@ -215,7 +218,7 @@ spec:
         {{- if .Values.deployment.additionalContainers }}
 {{ toYaml .Values.deployment.additionalContainers | indent 8 }}
         {{- end }}
-      {{- if .Values.nexus.securityContext }}
+      {{- if .Values.nexus.securityContextEnabled }}
       securityContext:
 {{ toYaml .Values.nexus.securityContext | indent 8 }}
       {{- end }}
