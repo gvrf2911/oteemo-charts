@@ -196,6 +196,12 @@ spec:
             - name: http
               containerPort: {{ .Values.service.internalPort }}
               protocol: TCP
+            - name: jmx-web
+              containerPort: 9260
+              protocol: TCP
+            - name: jmx-ce
+              containerPort: 9270
+              protocol: TCP
           {{- if .Values.plugins.install }}
           command:
             - /tmp/scripts/copy_plugins.sh
