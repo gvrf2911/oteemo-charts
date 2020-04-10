@@ -146,7 +146,7 @@ spec:
     {{- end }}
       {{- end }}
         - name: install-jmx-exporter-agent
-          image: {{ default "alpine:3.10.3" .Values.plugins.initContainerImage }}
+          image: {{ default "rjkernick/alpine-wget:latest" .Values.plugins.initContainerImage }}
           command: ["sh",
             "-c",
             "mkdir -p /opt/jmx-exporter &&
