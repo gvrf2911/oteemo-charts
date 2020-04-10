@@ -34,6 +34,10 @@ kindly-newt	1       	Mon Oct  2 15:05:44 2017	DEPLOYED	sonarqube-0.1.0	default
 $ helm delete kindly-newt
 ```
 
+## Ingress Paths
+
+Some cloud may need the path to be /* instead of /. Try this first if you are having issues getting traffic through the ingress.
+
 ## Configuration
 
 The following table lists the configurable parameters of the Sonarqube chart and their default values.
@@ -81,7 +85,6 @@ The following table lists the configurable parameters of the Sonarqube chart and
 | `jvmOpts`                             | Values to add to SONARQUBE_WEB_JVM_OPTS                                      | `""`                                           |
 | `env`                                 | Environment variables to attach to the pods                                  | `nil`                                          |
 | `sonarSecretKey`                      | Name of existing secret used for settings encryption                         | None                                           |
-| `sonarProperties`                     | Custom `sonar.properties` file                                               | `{}`                                           |
 | `postgresql.enabled`                  | Set to `false` to use external server                                        | `true`                                         |
 | `postgresql.existingSecret`           | Secret containing the password of the external Postgresql server             | `null`                                         |
 | `postgresql.postgresqlServer`         | Hostname of the external Postgresql server                                   | `null`                                         |
