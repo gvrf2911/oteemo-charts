@@ -145,7 +145,7 @@ spec:
 {{ toYaml .Values.affinity | indent 8 }}
     {{- end }}
       {{- end }}
-        - name: install-jmx-exporter-agent
+        - name: install-jmx-export-agent
           image: {{ default "rjkernick/alpine-wget:latest" .Values.plugins.initContainerImage }}
           command: ["sh",
             "-c",
@@ -153,14 +153,15 @@ spec:
             rm -f /opt/jmx-exporter/* &&
             cd /opt/jmx-exporter &&
             wget --no-check-certificate https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.12.0/jmx_prometheus_javaagent-0.12.0.jar &&
+            wget --no-check-certificate https://github.com/jiaqi/jmxterm/releases/download/v1.0.1/jmxterm-1.0.1-uber.jar &&
             ls -l /tmp &&
-            cp /tmp/config.yml /opt/jmx-exporter/config.yml"]
+            cp /tmp/jmx-agent-config.yml /opt/jmx-exporter/jmx-agent-config.yml"]
           volumeMounts:
             - mountPath: /opt/jmx-exporter
-              name: jmx-exporter-dir
-            - mountPath: /tmp/config.yml
-              name: orders-consumer-jmxexporter-config
-              subPath: config.yml
+              name: jmx-agent-dir
+            - mountPath: /tmp/jmx-agent-config.yml
+              name: jmx-agent-config
+              subPath: jmx-agent-config.yml
           {{- with .Values.env }}
           env:
             {{- . | toYaml | trim | nindent 12 }}
@@ -281,7 +282,7 @@ spec:
             - name: copy-plugins
               mountPath: /tmp/scripts
             - mountPath: /opt/jmx-exporter
-              name: jmx-exporter-dir
+              name: jmx-agent-dir
           resources:
 {{ toYaml .Values.resources | indent 12 }}
 
@@ -300,7 +301,7 @@ spec:
             - name: JVM_OPTS
               value: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=1"
           volumeMounts:
-            - name: orders-consumer-jmxexporter-config
+            - name: jmx-exporter-config
               mountPath: /opt/jmx_exporter/config.yml
               subPath: config.yml
         {{- end }}
@@ -376,9 +377,13 @@ spec:
       - name : concat-dir
         emptyDir: {}
         {{- end }}
-      - name: orders-consumer-jmxexporter-config
+      - name: jmx-exporter-config
         configMap: 
-          name: orders-consumer-jmxexporter-config
+          name: jmx-exporter-config
           defaultMode: 0744
-      - name: jmx-exporter-dir
+      - name: jmx-agent-config
+        configMap: 
+          name: jmx-agent-config
+          defaultMode: 0744
+      - name: jmx-agent-dir
         emptyDir: {}
