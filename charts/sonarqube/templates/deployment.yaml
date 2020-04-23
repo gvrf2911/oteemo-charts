@@ -45,6 +45,8 @@ spec:
       imagePullSecrets:
         - name: {{ .Values.image.pullSecret }}
       {{- end }}
+      # for SQ grace termination
+      # terminationGracePeriodSeconds: 3600
       initContainers:
         - name: chmod-volume-mounts
           image: {{ default "busybox:1.31" .Values.plugins.initVolumesContainerImage }}
@@ -268,9 +270,9 @@ spec:
             - mountPath: {{ .Values.sonarqubeFolder }}/extensions/downloads
               name: sonarqube
               subPath: downloads
-            - mountPath: {{ .Values.sonarqubeFolder }}/extensions/plugins
-              name: sonarqube
-              subPath: plugins
+            # - mountPath: {{ .Values.sonarqubeFolder }}/extensions/plugins
+            #   name: sonarqube
+            #   subPath: plugins
             - mountPath: {{ .Values.sonarqubeFolder }}/temp
               name: sonarqube
               subPath: temp
