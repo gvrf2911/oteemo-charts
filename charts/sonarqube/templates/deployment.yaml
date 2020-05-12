@@ -57,7 +57,7 @@ spec:
             - "sh"
             - "-c"
             - 'mkdir -p $(printf "/opt/sonarqube/${1-%s\n}" temp logs data extensions/downloads extensions/plugins/tmp certs) &&
-               chown 999:999 -R $(printf "/opt/sonarqube/${1-%s\n}" temp logs data extensions/downloads extensions/plugins/tmp  certs)'
+               chown 999:999 -R $(printf "/opt/sonarqube/${1-%s\n}" temp logs data extensions/downloads extensions/plugins/tmp certs)'
           volumeMounts:
           - mountPath: /opt/sonarqube/temp
             name: sonarqube
