@@ -152,6 +152,12 @@ persistence:
   ## Specify extra mounts. Refer to ".spec.containers.volumeMounts" specification : https://kubernetes.io/fr/docs/concepts/storage/volumes/
   mounts: []
 
+# In case you want to specify different resources for emptyDir than {}
+emptyDir: {}
+  # Example of resouces that might be used:
+  # medium: Memory
+  # sizeLimit: 16Mi
+
 # List of plugins to install.
 # For example:
 # plugins:
@@ -168,7 +174,6 @@ plugins:
 
   # initContainerImage: rjkernick/alpine-wget:latest
   # initSysctlContainerImage: busybox:1.31
-  # initVolumesContainerImage: busybox:1.31
   # initCertsContainerImage: adoptopenjdk/openjdk11:alpine
   # initTestContainerImage: dduportal/bats:0.4.0
   # deleteDefaultPlugins: true
@@ -190,6 +195,12 @@ plugins:
 # The secret must contain the key 'sonar-secret.txt'.
 # The 'sonar.secretKeyPath' property will be set automatically.
 # sonarSecretKey: "settings-encryption-secret"
+
+## JDBC Database Type; by default postgresql. To use a different Database type, adjust
+jdbcDatabaseType: postgresql
+
+## Override JDBC URL
+# jdbcUrlOverride: "jdbc:postgresql://myPostgress/myDatabase;socketTimeout=1500"
 
 ## Configuration values for postgresql dependency
 ## ref: https://github.com/kubernetes/charts/blob/master/stable/postgresql/README.md
@@ -229,3 +240,26 @@ serviceAccount:
   # name:
   ## Annotations for the Service Account
   annotations: {}
+
+# extraConfig is used to load Environment Variables from secrets and configmaps
+# which may have been written by other tools, such as external orchestrators.
+#
+# These Secrets/ ConfigMaps are expecetd to contain Key/ Value pairs, such as:
+#
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: external-sonarqube-opts
+# data:
+#   SONARQUBE_JDBC_USERNAME: foo
+#   SONARQUBE_JDBC_URL: jdbc:postgresql://db.example.com:5432/sonar
+#
+# These vars can then be injected into the environment by uncommenting the following:
+#
+# extraConfig:
+#   configmaps:
+#     - external-sonarqube-opts
+
+extraConfig:
+  secrets: []
+  configmaps: []
