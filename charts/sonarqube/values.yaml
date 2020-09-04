@@ -8,6 +8,11 @@ deploymentStrategy: {}
 # Uncomment this to scheduler pods on priority
 # priorityClassName: "high-priority"
 
+## Use an alternate scheduler, e.g. "stork".
+## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
+##
+# schedulerName:
+
 image:
   repository: sonarqube
   tag: 8.2-community
@@ -241,10 +246,10 @@ serviceAccount:
   ## Annotations for the Service Account
   annotations: {}
 
-# extraConfig is used to load Environment Variables from secrets and configmaps
+# extraConfig is used to load Environment Variables from Secrets and ConfigMaps
 # which may have been written by other tools, such as external orchestrators.
 #
-# These Secrets/ ConfigMaps are expecetd to contain Key/ Value pairs, such as:
+# These Secrets/ConfigMaps are expected to contain Key/Value pairs, such as:
 #
 # apiVersion: v1
 # kind: ConfigMap
