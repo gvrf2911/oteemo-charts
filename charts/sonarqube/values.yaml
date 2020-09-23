@@ -102,8 +102,12 @@ livenessProbe:
   # If an ingress *path* is defined, it should be reflected here
   # sonar.web.context: /sonarqube
 
+# Sysctl container requires to be run as privileged
+initContainersSecurityContext:
+  privileged: true
+
 ## Provide a secret containing one or more certificate files in the keys that will be added to cacerts
-## The cacerts file will be set via SONARQUBE_WEB_JVM_OPTS
+## The cacerts file will be set via SONARQUBE_WEB_JVM_OPTS and SONAR_CE_JAVAOPTS
 ##
 # caCerts:
 #   secret: my-secret
@@ -268,3 +272,8 @@ serviceAccount:
 extraConfig:
   secrets: []
   configmaps: []
+
+# account:
+#   adminPassword: admin
+#   currentAdminPassword: admin
+# curlContainerImage: curlimages/curl:latest
