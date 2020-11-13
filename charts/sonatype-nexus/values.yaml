@@ -11,6 +11,13 @@ deploymentStrategy: {}
   #   maxUnavailable: 25%
   # type: RollingUpdate
 
+# If enabled, a Job will be launched after the chart is installed to initialize the admin password of your choice
+initAdminPassword:
+  enabled: false
+  # Set this in the instance where default admin password is different
+  defaultPasswordOverride:
+  password: "admin321"
+
 nexus:
   imageName: quay.io/travelaudience/docker-nexus
   imageTag: 3.25.1
@@ -18,8 +25,8 @@ nexus:
   # Uncomment this to scheduler pods on priority
   # priorityClassName: "high-priority"
   env:
-    - name: install4jAddVmParams
-      value: "-Xms1200M -Xmx1200M -XX:MaxDirectMemorySize=2G -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
+    - name: INSTALL4J_ADD_VM_PARAMS
+      value: "-Xms1200M -Xmx1200M -XX:MaxDirectMemorySize=2G -XX:ActiveProcessorCount=4"
     - name: NEXUS_SECURITY_RANDOMPASSWORD
       value: "false"
   # nodeSelector:
@@ -60,7 +67,7 @@ nexus:
     fsGroup: 200
   podAnnotations: {}
   livenessProbe:
-    initialDelaySeconds: 30
+    initialDelaySeconds: 300
     periodSeconds: 30
     failureThreshold: 6
     # timeoutSeconds: 10
@@ -152,6 +159,7 @@ nexusBackup:
     nexusAuthorization:
     offlineRepos: "maven-central maven-public maven-releases maven-snapshots"
     gracePeriod: 60
+  # This should match the value of `initAdminPassword.password` if `initAdminPassword.enabled` is true
   nexusAdminPassword: "admin123"
   persistence:
     enabled: true
@@ -173,12 +181,32 @@ nexusBackup:
       # cpu: 200m
       # memory: 512Mi
 
+nexusCloudiam:
+  enabled: false
+  persistence:
+    enabled: true
+    # existingClaim:
+    # annotations:
+    #  "helm.sh/resource-policy": keep
+    accessMode: ReadWriteOnce
+    # See comment above for information on setting the backup storageClass
+    # storageClass: "-"
+    storageSize: 1Mi
+    # If PersistentDisk already exists you can create a PV for it by including the 2 following keypairs.
+    # pdName: nexus-cloudiam-path
+    # fsType: ext4
+
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name:
+  annotations: {}
+
+rbac:
+  create: false
+  roleRef: {}
   annotations: {}
 
 ingress:
