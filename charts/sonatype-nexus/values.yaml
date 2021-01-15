@@ -46,6 +46,7 @@ nexus:
   # The ports should only be changed if the nexus image uses a different port
   dockerPort: 5003
   nexusPort: 8081
+  additionalPorts: []
   service:
     type: NodePort
     # clusterIP: None
@@ -85,6 +86,9 @@ nexus:
   #   - "example.com"
   #   - "www.example.com"
   context:
+  # When using nexus it is important that all the files in the data directory have the proper owner configured. Therefore this
+  # value defaults to true to apply chown -R nexus:nexus to the mounted directory at every startup of the container.
+  chownNexusData: true
 
 route:
   enabled: false
@@ -264,6 +268,7 @@ ingressDocker:
   #         serviceName: additional-svc
   #         servicePort: 80
 
+affinity: {}
 
 tolerations: []
 

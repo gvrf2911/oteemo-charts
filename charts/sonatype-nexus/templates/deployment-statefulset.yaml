@@ -80,6 +80,8 @@ spec:
           {{- end }}
           env:
 {{ toYaml .Values.nexus.env | indent 12 }}
+            - name: NEXUS_DATA_CHOWN
+              value: {{ .Values.nexus.chownNexusData | quote }}
 {{- if .Values.nexus.context }}
             - name: NEXUS_CONTEXT
               value: {{ .Values.nexus.context }}
@@ -91,7 +93,10 @@ spec:
             - containerPort: {{ .Values.nexus.dockerPort }}
               name: nexus-docker-g
             - containerPort: {{ .Values.nexus.nexusPort }}
-              name: nexus-http
+              name: nexus-http        
+            {{- with .Values.nexus.additionalPorts  }}
+{{ toYaml . | indent 12 }}
+            {{- end }}
           livenessProbe:
             httpGet:
               path: {{ .Values.nexus.livenessProbe.path }}
@@ -319,6 +324,10 @@ spec:
         {{- end }}
     {{- with .Values.tolerations }}
       tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
 {{ toYaml . | indent 8 }}
     {{- end }}
 

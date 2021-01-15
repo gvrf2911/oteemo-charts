@@ -93,6 +93,7 @@ The following table lists the configurable parameters of the Nexus chart and the
 | `nexus.resources`                           | Nexus resource requests and limits  | `{}`                                    |
 | `nexus.dockerPort`                          | Port to access docker               | `5003`                                  |
 | `nexus.nexusPort`                           | Internal port for Nexus service     | `8081`                                  |
+| `nexus.additionalPorts`                     | expose additional ports             | `[]`                                  |
 | `nexus.service.type`                        | Service for Nexus                   | `NodePort`                                |
 | `nexus.service.clusterIp`                   | Specific cluster IP when service type is cluster IP. Use None for headless service |`nil`   |
 | `nexus.service.loadBalancerIP`                        | Custom loadBalancerIP                   |`nil`                                |
@@ -111,6 +112,7 @@ The following table lists the configurable parameters of the Nexus chart and the
 | `nexus.readinessProbe.path`                 | Path for ReadinessProbe             | /                                       |
 | `nexus.hostAliases`                         | Aliases for IPs in /etc/hosts       | []                                      |
 | `nexus.context`                             | Non-root path to run Nexus at       | `nil`                                   |
+| `nexus.chownNexusData`                      | Set false to not execute chown to the mounted nexus-data directory at startup | `true` |
 | `nexusProxy.enabled`                        | Enable nexus proxy                  | `true`                                  |
 | `nexusProxy.svcName`                        | Nexus proxy service name            | `nil`                                  |
 | `nexusProxy.targetPort`                     | Container Port for Nexus proxy      | `8080`                                  |
